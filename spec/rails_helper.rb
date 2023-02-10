@@ -94,9 +94,10 @@ RSpec.configure do |config|
   # [...]
   Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
   # [...]
-  RSpec.configuration do |config|
+  RSpec.configure do |config|
     # [...]
-    config.include RequestSpecHelper, type: :request
+    config.include RequestSpecHelper
+    config.include ControllerSpecHelper
     # [...]
   end
 
