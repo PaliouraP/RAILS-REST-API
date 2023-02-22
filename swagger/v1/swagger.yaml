@@ -9,14 +9,16 @@ produces:
   - application/json
 schemes:
   - https
-host: "todo-list-api.herokuapp.com"
+  - http
+host: "127.0.0.1:3000"
 basePath: "/"
 securityDefinitions:
-  Authorization:
+  Bearer:
     type: apiKey
-    name: Authorization
     in: header
-    description: "JWT token"
+    name: Authorization
+security:
+  - Bearer: []
 definitions:
   User:
     type: object
