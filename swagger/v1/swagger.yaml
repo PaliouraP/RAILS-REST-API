@@ -10,7 +10,7 @@ produces:
 schemes:
   - https
   - http
-host: "127.0.0.1:3000"
+host: "todo-list-api.herokuapp.com"
 basePath: "/"
 securityDefinitions:
   Bearer:
