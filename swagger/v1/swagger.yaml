@@ -1,0 +1,362 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Todo API"
+  description: "API for managing todos and items"
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - https
+host: "todo-list-api.herokuapp.com"
+basePath: "/"
+securityDefinitions:
+  Authorization:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: "JWT token"
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: John Doe
+      email:
+        type: string
+        example: john.doe@example.com
+      created_at:
+        type: string
+        format: date-time
+        example: "2023-03-01T15:20:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        example: "2023-03-01T15:20:00Z"
+  Todo:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: Buy groceries
+      user_id:
+        type: integer
+        example: 1
+      created_at:
+        type: string
+        format: date-time
+        example: "2023-03-01T15:20:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        example: "2023-03-01T15:20:00Z"
+  Item:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: Apples
+      todo_id:
+        type: integer
+        example: 1
+      done:
+        type: boolean
+        example: false
+      created_at:
+        type: string
+        format: date-time
+        example: "2023-03-01T15:20:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        example: "2023-03-01T15:20:00Z"
+  Error:
+    type: object
+    properties:
+      error:
+        type: string
+        example: Invalid email or password
+  AuthToken:
+    type: object
+    properties:
+      access_token:
+        type: string
+        example: eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2MjA4NzIzMTV9.Zzi8sp5ZKb5NTFAEBOF5bm5C8WnDWtKlBOVmN9z40bQ
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: "Authenticate user"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: "User credentials"
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: "john.doe@example.com"
+              password:
+                type: string
+                example: "password123"
+      responses:
+        '200':
+          description: "User authenticated successfully"
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                example: "JWT_TOKEN"
+        '401':
+          description: "Unauthorized"
+  /signup:
+    post:
+      tags:
+        - auth
+      summary: "Create user"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: "User credentials"
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "John Doe"
+              email:
+                type: string
+                example: "john.doe@example.com"
+              password:
+                type: string
+                example: "password123"
+              password_confirmation:
+                type: string
+                example: "password123"
+      responses:
+        '201':
+          description: "User created successfully"
+        '422':
+          description: "Unprocessable Entity"
+  /todos:
+    get:
+      tags:
+        - todos
+      summary: "List todos"
+      responses:
+        '200':
+          description: "List of todos"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Todo"
+    post:
+      tags:
+        - todos
+      summary: "Create todo"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: "Todo details"
+          required: true
+          schema:
+            $ref: "#/definitions/TodoInput"
+      responses:
+        '201':
+          description: "Todo created successfully"
+        '422':
+          description: "Unprocessable Entity"
+  /todos/{todo_id}:
+    get:
+      tags:
+        - todos
+      summary: "Get todo by ID"
+      parameters:
+        - in: path
+          name: todo_id
+          description: "ID of todo to get"
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: "Todo details"
+          schema:
+            $ref: "#/definitions/Todo"
+        '404':
+          description: "Todo not found"
+    put:
+      tags:
+        - todos
+      summary: "Update todo by ID"
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: todo_id
+          description: "ID of todo to update"
+          required: true
+          type: integer
+        - in: body
+          name: body
+          description: "Todo details"
+          required: true
+          schema:
+            $ref: "#/definitions/TodoInput"
+      responses:
+        '200':
+          description: "Todo updated successfully"
+          schema:
+            $ref: "#/definitions/Todo"
+        '404':
+          description: "Todo not found"
+    delete:
+      tags:
+        - todos
+      summary: "Delete todo by ID"
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: todo_id
+          description: "ID of todo to delete"
+          required: true
+          type: integer
+        - in: body
+          name: body
+          description: "Todo details"
+          required: true
+          schema:
+            $ref: "#/definitions/TodoInput"
+      responses:
+        '200':
+          description: "Todo updated successfully"
+          schema:
+            $ref: "#/definitions/Todo"
+        '404':
+          description: "Todo not found"
+  /todos/{todo_id}/items:
+    get:
+      tags:
+        - items
+      summary: "Get all items in a Todo by Todo-ID"
+      parameters:
+        - in: path
+          name: todo_id
+          description: "ID of todo to get the Items from"
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: "List of Items"
+          schema:
+            $ref: "#/definitions/Item"
+        '404':
+          description: "Todo not found"
+    post:
+      tags:
+        - items
+      summary: "Create Item inside a Todo by Todo-ID"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: item
+          description: "Item details"
+          required: true
+          schema:
+            $ref: "#/definitions/ItemInput"
+        - in: path
+          name: todo_id
+          description: "Todo ID"
+          required: true
+          type: integer
+      responses:
+        '201':
+          description: "Item created successfully"
+        '422':
+          description: "Unprocessable Entity"
+    put:
+      tags:
+        - items
+      summary: "Update an Item inside a Todo by Todo-ID"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: item
+          description: "Item details"
+          required: true
+          schema:
+            $ref: "#/definitions/ItemInput"
+        - in: path
+          name: todo_id
+          description: "Todo ID"
+          required: true
+          type: integer
+      responses:
+        '201':
+          description: "Item updated successfully"
+        '422':
+          description: "Unprocessable Entity"
+    delete:
+      tags:
+        - items
+      summary: "Delete an Item inside a Todo by Todo-ID"
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: todo_id
+          description: "Todo ID"
+          required: true
+          type: integer
+      responses:
+        '201':
+          description: "Item deleted successfully"
+        '422':
+          description: "Unprocessable Entity"
+  /todos/{todo_id}/items/{item_id}:
+    get:
+      tags:
+        - items
+      summary: "Get a specific Item from a Todo, by Item-ID and Todo-ID"
+      parameters:
+        - in: path
+          name: todo_id
+          description: "ID of todo to get the Items from"
+          required: true
+          type: integer
+        - in: path
+          name: item_id
+          description: "Id of item to get"
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: "The Todo Item"
+          schema:
+            $ref: "#/definitions/Item"
+        '404':
+          description: "Todo not found"
