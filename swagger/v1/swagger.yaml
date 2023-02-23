@@ -46,7 +46,7 @@ definitions:
       id:
         type: integer
         example: 1
-      name:
+      title:
         type: string
         example: Buy groceries
       user_id:
@@ -60,6 +60,21 @@ definitions:
         type: string
         format: date-time
         example: "2023-03-01T15:20:00Z"
+  TodoInput:
+    type: object
+    properties:
+      title:
+        type: string
+        example: Buy groceries
+  ItemInput:
+    type: object
+    properties:
+      name:
+        type: string
+        example: Apples
+      done:
+        type: boolean
+        example: false
   Item:
     type: object
     properties:
@@ -205,7 +220,7 @@ paths:
         '200':
           description: "Todo details"
           schema:
-            $ref: "#/definitions/Todo"
+            $ref: "#/definitions/TodoInput"
         '404':
           description: "Todo not found"
     put:
@@ -225,12 +240,12 @@ paths:
           description: "Todo details"
           required: true
           schema:
-            $ref: "#/definitions/TodoInput"
+            $ref: "#/definitions/Todo"
       responses:
         '200':
           description: "Todo updated successfully"
           schema:
-            $ref: "#/definitions/Todo"
+            $ref: "#/definitions/TodoInput"
         '404':
           description: "Todo not found"
     delete:
@@ -245,12 +260,6 @@ paths:
           description: "ID of todo to delete"
           required: true
           type: integer
-        - in: body
-          name: body
-          description: "Todo details"
-          required: true
-          schema:
-            $ref: "#/definitions/TodoInput"
       responses:
         '200':
           description: "Todo updated successfully"
