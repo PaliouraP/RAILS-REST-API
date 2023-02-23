@@ -57,3 +57,5 @@ group :development do
 end
 
 gem 'jwt'
+gem "rswag"
+gem "swagger-blocks"
